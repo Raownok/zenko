@@ -1,0 +1,179 @@
+	{% extends 'base.html' %}
+	{% load static %}
+
+	{% block body %}
+	<h1 class="page-title"> </h1>
+	{% include 'slider.html' %}
+
+	<style>
+	.category-card {
+		position: relative;
+		border-radius: 14px;
+		overflow: hidden;
+		box-shadow: 0 12px 24px rgba(0,0,0,.15);
+		transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+		text-decoration: none;
+		display: block;
+	}
+	.category-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 18px 30px rgba(0,0,0,.22);
+		filter: brightness(1.05);
+	}
+	.category-card__img { width: 100%; height: 200px; object-fit: cover; display: block; }
+	.category-card__overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent, rgba(0,0,0,.6)); }
+	.category-title { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 16px; margin: 0; color: #fff; font-weight: 700; letter-spacing: .3px; }
+	.category-card--placeholder { background: linear-gradient(135deg, #2d2f36, #6c757d); height: 200px; display: flex; align-items: center; justify-content: center; color: #fff; }
+	</style>
+
+	<!-- Perfume Categories -->
+	<div class="untree_co-section" style="padding-top: 2rem; padding-bottom: 0;">
+		<div class="container">
+			<div class="row">
+				<div class="col-12 mb-4"><h3 class="h4">Spray Perfumes</h3></div>
+				<div class="col-12 col-sm-6 col-lg-4 mb-4">
+					<a class="product-item text-center" href="/perfume/male/">
+						<div class="category-card">
+							{% if male_sample and male_sample.image1 %}
+								<img class="category-card__img" src="{{ male_sample.image1.url }}" alt="Male Perfume">
+								<div class="category-card__overlay"></div>
+								<h5 class="category-title">Male Perfume</h5>
+							{% else %}
+								<div class="category-card--placeholder"><h5 class="category-title" style="position:static">Male Perfume</h5></div>
+							{% endif %}
+						</div>
+					</a>
+				</div>
+				<div class="col-12 col-sm-6 col-lg-4 mb-4">
+					<a class="product-item text-center" href="/perfume/female/">
+						<div class="category-card">
+							{% if female_sample and female_sample.image1 %}
+								<img class="category-card__img" src="{{ female_sample.image1.url }}" alt="Female Perfume">
+								<div class="category-card__overlay"></div>
+								<h5 class="category-title">Female Perfume</h5>
+							{% else %}
+								<div class="category-card--placeholder"><h5 class="category-title" style="position:static">Female Perfume</h5></div>
+							{% endif %}
+						</div>
+					</a>
+				</div>
+				<div class="col-12 col-sm-6 col-lg-4 mb-4">
+					<a class="product-item text-center" href="/perfume/unisex/">
+						<div class="category-card">
+							{% if unisex_sample and unisex_sample.image1 %}
+								<img class="category-card__img" src="{{ unisex_sample.image1.url }}" alt="Unisex Perfume">
+								<div class="category-card__overlay"></div>
+								<h5 class="category-title">Unisex Perfume</h5>
+							{% else %}
+								<div class="category-card--placeholder"><h5 class="category-title" style="position:static">Unisex Perfume</h5></div>
+							{% endif %}
+						</div>
+					</a>
+				</div>
+
+				<div class="col-12 mb-3"><h3 class="h5 mt-2">Roll Ons</h3></div>
+				<div class="col-12 col-sm-6 col-lg-4 mb-4">
+					<a class="product-item text-center" href="/perfume/male/">
+						<div class="category-card">
+							{% if male_roll_sample and male_roll_sample.image1 %}
+								<img class="category-card__img" src="{{ male_roll_sample.image1.url }}" alt="Male Roll Ons">
+								<div class="category-card__overlay"></div>
+								<h5 class="category-title">Male Roll Ons</h5>
+							{% else %}
+								<div class="category-card--placeholder"><h5 class="category-title" style="position:static">Male Roll Ons</h5></div>
+							{% endif %}
+						</div>
+					</a>
+				</div>
+				<div class="col-12 col-sm-6 col-lg-4 mb-4">
+					<a class="product-item text-center" href="/perfume/female/">
+						<div class="category-card">
+							{% if female_roll_sample and female_roll_sample.image1 %}
+								<img class="category-card__img" src="{{ female_roll_sample.image1.url }}" alt="Female Roll Ons">
+								<div class="category-card__overlay"></div>
+								<h5 class="category-title">Female Roll Ons</h5>
+							{% else %}
+								<div class="category-card--placeholder"><h5 class="category-title" style="position:static">Female Roll Ons</h5></div>
+							{% endif %}
+						</div>
+					</a>
+				</div>
+				<div class="col-12 col-sm-6 col-lg-4 mb-4">
+					<a class="product-item text-center" href="/perfume/unisex/">
+						<div class="category-card">
+							{% if unisex_roll_sample and unisex_roll_sample.image1 %}
+								<img class="category-card__img" src="{{ unisex_roll_sample.image1.url }}" alt="Unisex Roll Ons">
+								<div class="category-card__overlay"></div>
+								<h5 class="category-title">Unisex Roll Ons</h5>
+							{% else %}
+								<div class="category-card--placeholder"><h5 class="category-title" style="position:static">Unisex Roll Ons</h5></div>
+							{% endif %}
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="untree_co-section">
+        <div class="container">
+            <div class="row">
+                {% for featured in featuredProductList %}
+                    {% with product=featured.product %}
+                    <div class="col-6 col-sm-6 col-md-6 mb-4 col-lg-4">
+                        <div class="product-item">
+                            <a href="{% url 'viewProduct' product.id %}" class="product-img">
+                                {% if product.new_product %}
+                                <div class="label new top-right">
+                                    <div class="content">New</div>
+                                </div>
+                                {% endif %}
+
+                                {% if product.image1 %}
+                                    <img src="{{ product.image1.url }}" alt="{{ product.name }}" class="img-fluid">
+                                {% endif %}
+                            </a>
+                            <h3 class="title">
+                                <a href="{% url 'viewProduct' product.id %}">{{ product.name }}</a>
+                            </h3>
+                            <div class="price">
+                                {% if product.is_sale %}
+                                    <span class="text-danger">£ {{ product.sale_price }}</span>
+                                    <del>£ {{ product.price }}</del>
+                                {% else %}
+                                    <span>£ {{ product.price }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+	<!-- 
+		<div class="container">
+
+
+			<div class="deal-hero overlay">
+				<img src="{% static 'images/promoBackground2.jpg'%}" alt="Image" class="img-fluid">
+				<div class="deal-contents">
+					<span class="subtitle">Limited Offers 20% OFF</span>
+					<h2 class="title mb-4"><a href="#">Summer Promo</a></h2>
+					<p class="mb-5">Get your promo code right now.</p>
+					<a href="/shop/view" class="btn btn-black">Shop Now</a>
+				</div>
+			</div>  
+
+		</div>   -->
+		{% include 'popularItems.html' %}
+
+		{% load site_extras %}
+{% delivery_section 'home' %}
+
+
+
+
+
+	{% endblock %}

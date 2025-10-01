@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="page-heading bg-light">
+  <div class="container">
+    <div class="row align-items-end text-center">
+      <div class="col-lg-7 mx-auto">
+        <h1>Cart</h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="untree_co-section">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-md-12">
+<div class="site-blocks-table table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th class="product-thumbnail">Image</th>
+                <th class="product-name">Product</th>
+                <th class="product-price">Price</th>
+                <th class="product-quantity">Qty</th>
+                <th class="product-variant">Size</th>
+                <th class="product-total">Total</th>
+                <th class="product-remove">Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+              <tr data-item-id="{{ item.id }}">
+                <td class="product-thumbnail">
+                  <img src="{{ item.product.image1.url }}" alt="{{ item.product.name }}" class="img-fluid">
+                </td>
+                <td class="product-name">
+                  <h2 class="h5 text-black">{{ item.product.name }}</h2>
+                </td>
+                <td class="product-price">{{ item.product.price }} ৳</td>
+                <td>
+                  <div class="input-group mb-3" style="max-width: 120px;">
+                    <div class="input-group-prepend">
+                      <button class="btn btn-outline-black js-btn-minus" data-item-id="{{ item.id }}">−</button>
+                    </div>
+                    <input type="text" class="form-control text-center quantity-input" value="{{ item.quantity }}" readonly>
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-black js-btn-plus" data-item-id="{{ item.id }}">+</button>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ item.volume_option }}</td>
+                <td class="row-total">{{ item.total_price }} ৳</td>
+                <td><button class="btn btn-black btn-sm js-btn-remove" data-item-id="{{ item.id }}">X</button></td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="6" class="text-center">Your cart is empty</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <a href="{% url 'shop' %}" class="btn btn-outline-black btn-sm btn-block mb-3">Continue Shopping</a>
+      </div>
+      <div class="col-md-6">
+        <div class="border p-4">
+          <h3 class="text-black h4 text-uppercase mb-4">Cart Totals</h3>
+          <div class="d-flex justify-content-between mb-3">
+            <span>Subtotal</span>
+            <strong id="cart-subtotal">{{ total_price }} ৳</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <span>Total</span>
+            <strong id="cart-total">{{ total_price }} ৳</strong>
+          </div>
+          <a href="{% url 'checkout' %}" class="btn btn-black btn-lg py-3 btn-block">Proceed To Checkout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function(){
+
+    function updateCartRow(itemId, newQty, newTotal){
+        let row = $('tr[data-item-id="'+itemId+'"]');
+        row.find('input.quantity-input').val(newQty);
+        row.find('.row-total').text(newTotal.toFixed(2) + ' ৳');
+
+        // update subtotal and total
+        let subtotal = 0;
+        $('.row-total').each(function(){
+            subtotal += parseFloat($(this).text().replace('৳','')) || 0;
+        });
+        $('#cart-subtotal, #cart-total').text(subtotal.toFixed(2) + ' ৳');
+    }
+
+    $('.js-btn-plus').click(function(e){
+        e.preventDefault();
+        let itemId = $(this).data('item-id');
+        $.ajax({
+            url: '/cart/ajax/add/' + itemId + '/',
+            method: 'POST',
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+            success: function(response){
+                updateCartRow(itemId, response.new_quantity, response.item_total);
+            }
+        });
+    });
+
+    $('.js-btn-minus').click(function(e){
+        e.preventDefault();
+        let itemId = $(this).data('item-id');
+        $.ajax({
+            url: '/cart/ajax/remove/' + itemId + '/',
+            method: 'POST',
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+            success: function(response){
+                if(response.item_total === 0){
+                    $('tr[data-item-id="'+itemId+'"]').remove();
+                } else {
+                    updateCartRow(itemId, response.new_quantity, response.item_total);
+                }
+
+                // check if cart is empty
+                if($('tbody tr').length === 0){
+                    $('tbody').append('<tr><td colspan="6" class="text-center">Your cart is empty</td></tr>');
+                    $('#cart-subtotal, #cart-total').text('0.00 ৳');
+                }
+            }
+        });
+    });
+
+    $('.js-btn-remove').click(function(e){
+        e.preventDefault();
+        let itemId = $(this).data('item-id');
+        $.ajax({
+            url: '/cart/ajax/remove/' + itemId + '/',
+            method: 'POST',
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+            success: function(response){
+                $('tr[data-item-id="'+itemId+'"]').remove();
+
+                // update subtotal
+                let subtotal = 0;
+                $('.row-total').each(function(){
+                    subtotal += parseFloat($(this).text().replace('৳','')) || 0;
+                });
+                $('#cart-subtotal, #cart-total').text(subtotal.toFixed(2) + ' ৳');
+
+                // empty cart message
+                if($('tbody tr').length === 0){
+                    $('tbody').append('<tr><td colspan="6" class="text-center">Your cart is empty</td></tr>');
+                    $('#cart-subtotal, #cart-total').text('0.00 ৳');
+                }
+            }
+        });
+    });
+
+});
+</script>
+{% load site_extras %}
+{% delivery_section 'cart' %}
+{% endblock %}

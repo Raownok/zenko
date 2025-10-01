@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+
+
+  <!-- <div class="untree_co-hero" style="background-image: url('images/hero-slider-1-min.jpg');">
+    <div class="container">
+      <div class="row align-items-center justify-content-center">
+        <div class="col-lg-8 text-center text-lg-center">
+
+          <h1 class="mb-4 heading text-white" data-aos="fade-up" data-aos-delay="50" style="color: gold;">About Products</h1>
+
+
+
+          <p class="mb-0" data-aos="fade-up" data-aos-delay="300"><a href="/shop/view/" class="btn btn-black">Explore now</a></p>
+
+        </div>
+      </div>
+    </div>
+  </div> -->
+<br><br>
+<div class="untree_co-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        {% if about %}
+        <div class="row align-items-center">
+
+          {% if about.layout == 'image_left' and about.image %}
+          <!-- Image Left, Text Right -->
+          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="400">
+            <div class="bg-1"></div>
+            <div class="media-cover fill">
+              <img src="{{ about.image.url }}" alt="Image">
+            </div>
+          </div>
+          <div class="col-lg-5 ml-auto">
+            <h2 class="line-bottom mb-4" data-aos="fade-up" data-aos-delay="0">{{ about.title|default:"About" }}</h2>
+            {% if about.updated_at %}
+            <div class="text-muted mb-2" style="font-size: 0.9rem;" data-aos="fade-up" data-aos-delay="50">Last updated {{ about.updated_at|date:"M d, Y" }}</div>
+            {% endif %}
+            <p data-aos="fade-up" data-aos-delay="100">
+              {{ about.content|safe }}
+            </p>
+            {% if about.highlights.all %}
+            <ul class="list-unstyled ul-check mb-5 primary" data-aos="fade-up" data-aos-delay="200">
+              {% for h in about.highlights.all %}
+              <li>{{ h.text|safe }}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <ul class="list-unstyled ul-check mb-5 primary" data-aos="fade-up" data-aos-delay="200">
+              {% if about.bullet1 %}<li>{{ about.bullet1 }}</li>{% endif %}
+              {% if about.bullet2 %}<li>{{ about.bullet2 }}</li>{% endif %}
+              {% if about.bullet3 %}<li>{{ about.bullet3 }}</li>{% endif %}
+            </ul>
+            {% endif %}
+            <p data-aos="fade-up" data-aos-delay="200">
+              <a href="{{ about.button_url|default:'/shop/view/' }}" class="btn btn-outline-black">{{ about.button_text|default:'Shop Now' }}</a>
+            </p>
+          </div>
+
+          {% else %}
+          <!-- Text Left, Image Right (or Text only) -->
+          <div class="col-lg-5">
+            <h2 class="line-bottom mb-4" data-aos="fade-up" data-aos-delay="0">{{ about.title|default:"About" }}</h2>
+            {% if about.updated_at %}
+            <div class="text-muted mb-2" style="font-size: 0.9rem;" data-aos="fade-up" data-aos-delay="50">Last updated {{ about.updated_at|date:"M d, Y" }}</div>
+            {% endif %}
+            <p data-aos="fade-up" data-aos-delay="100">
+              {{ about.content|safe }}
+            </p>
+            {% if about.highlights.all %}
+            <ul class="list-unstyled ul-check mb-5 primary" data-aos="fade-up" data-aos-delay="200">
+              {% for h in about.highlights.all %}
+              <li>{{ h.text|safe }}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <ul class="list-unstyled ul-check mb-5 primary" data-aos="fade-up" data-aos-delay="200">
+              {% if about.bullet1 %}<li>{{ about.bullet1 }}</li>{% endif %}
+              {% if about.bullet2 %}<li>{{ about.bullet2 }}</li>{% endif %}
+              {% if about.bullet3 %}<li>{{ about.bullet3 }}</li>{% endif %}
+            </ul>
+            {% endif %}
+            <p data-aos="fade-up" data-aos-delay="200">
+              <a href="{{ about.button_url|default:'/shop/view/' }}" class="btn btn-outline-black">{{ about.button_text|default:'Shop Now' }}</a>
+            </p>
+          </div>
+          {% if about.image %}
+          <div class="col-lg-6 ml-auto" data-aos="fade-up" data-aos-delay="400">
+            <div class="bg-1"></div>
+            <div class="media-cover fill">
+              <img src="{{ about.image.url }}" alt="Image">
+            </div>
+          </div>
+          {% endif %}
+
+          {% endif %}
+        </div>
+        {% else %}
+        <!-- Fallback if no about object -->
+        <div class="row justify-content-center text-center">
+          <div class="col-lg-8">
+            <h2 class="line-bottom mb-4" data-aos="fade-up" data-aos-delay="0">About Us</h2>
+            <p data-aos="fade-up" data-aos-delay="100">
+              Coming soon.
+            </p>
+            <p data-aos="fade-up" data-aos-delay="200">
+              <a href="/shop/view/" class="btn btn-black">Explore now</a>
+            </p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div> <!-- /.untree_co-section -->
+
+{% load site_extras %}
+{% delivery_section 'about' %}
+{% endblock %}
