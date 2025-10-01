@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load multiply %}
+{% block body %}
+
+<style>
+:root{
+  --g1:#7c3aed; --g2:#ec4899; --g3:#22d3ee; --ink:#0b1324; --muted:#6b7280;
+  --card-bg:#ffffff; --card-ink:#0b1324; --pill-bg:#f8fafc; --pill-border:#eef2ff; --thead-bg:#f8fafc;
+}
+#profile-root[data-theme="dark"]{
+  --card-bg: rgba(15,23,42,.7);
+  --card-ink:#e5e7eb;
+  --pill-bg:#0b1324;
+  --pill-border:#1f2937;
+  --thead-bg:#0f172a;
+}
+/* Animated gradient hero */
+.profile-hero {
+  position: relative;
+  background: linear-gradient(120deg, var(--g1), var(--g2), var(--g3));
+  background-size: 200% 200%;
+  animation: heroShift 10s ease infinite;
+  color: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.profile-hero:after{
+  content:""; position:absolute; inset:0; background: radial-gradient(1200px 400px at -10% -20%, rgba(255,255,255,.15), transparent 60%), radial-gradient(900px 300px at 120% 120%, rgba(255,255,255,.15), transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+/* Ensure content sits above overlay */
+.profile-hero > * { position: relative; z-index: 1; }
+@keyframes heroShift{ 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+.profile-hero h2 { color: #fff; letter-spacing:.2px; }
+/* Improve contrast in light theme */
+#profile-root[data-theme="light"] .profile-hero h2 { color: var(--ink); }
+#profile-root[data-theme="light"] .profile-hero .text-white-50 { color: rgba(11,19,36,.66) !important; }
+#profile-root[data-theme="light"] .theme-toggle { color:#0b1324; background: rgba(255,255,255,.85); }
+
+/* Theme toggle */
+.theme-toggle { position:absolute; top:16px; right:16px; width:42px; height:42px; border-radius:999px; border:none; background: rgba(255,255,255,.25); color:#fff; display:inline-flex; align-items:center; justify-content:center; backdrop-filter: blur(4px); box-shadow: 0 6px 16px rgba(0,0,0,.2); cursor:pointer; transition: transform .15s ease, background .2s ease; z-index: 2; }
+.theme-toggle:hover { transform: translateY(-1px); background: rgba(255,255,255,.35); }
+
+/* Avatar with glowing ring */
+.avatar-ring {
+  width: 90px; height: 90px; border-radius: 50%; display:inline-flex; align-items:center; justify-content:center;
+  color:#fff; font-weight:800; font-size:30px; position:relative;
+}
+.avatar-ring:before{
+  content:""; position:absolute; inset:-3px; border-radius:inherit; background: conic-gradient(from 180deg, var(--g1), var(--g2), var(--g3), var(--g1));
+  filter: blur(.5px); z-index:-1;
+}
+.avatar-ring:after{
+  content:""; position:absolute; inset:4px; border-radius:inherit; background: rgba(255,255,255,.15);
+}
+
+/* Glass cards with hover lift */
+.card-shadow { border-radius: 14px; box-shadow: 0 18px 40px rgba(2,6,23,.08); backdrop-filter: blur(6px); transition: transform .2s ease, box-shadow .2s ease; background: var(--card-bg); color: var(--card-ink); }
+.card-shadow:hover { transform: translateY(-2px); box-shadow: 0 24px 60px rgba(2,6,23,.12); }
+
+/* Inputs in dark */
+#profile-root[data-theme="dark"] .form-control{ background:#0b1324; color:#e5e7eb; border-color:#1f2937; }
+
+/* Gradient button */
+.btn-gradient { background: linear-gradient(135deg, var(--g1), var(--g2)); color:#fff; border:none; transition: transform .15s ease, filter .2s ease, box-shadow .2s ease; box-shadow: 0 10px 20px rgba(124,58,237,.25); }
+.btn-gradient:hover { filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 14px 28px rgba(124,58,237,.32); }
+
+/* Stat pills */
+.stat-pill { background: var(--pill-bg); border:1px solid var(--pill-border); border-radius: 12px; padding: 12px 14px; transition: transform .15s ease, background .2s ease; }
+.stat-pill:hover { transform: translateY(-1px); background:#ffffff22; }
+.stat-count { font-variation-settings: "wght" 700; }
+
+/* Order accordion styles */
+.order-card { border:1px solid var(--pill-border); border-radius: 14px; overflow:hidden; background: var(--card-bg); color: var(--card-ink); box-shadow: 0 10px 24px rgba(2,6,23,.06); }
+.order-header-row { cursor:pointer; user-select:none; position:relative; background: linear-gradient(180deg, rgba(2,6,23,.02), transparent); }
+.order-header-row:hover { background: linear-gradient(180deg, rgba(2,6,23,.04), transparent); }
+.order-header-row .caret { width:10px; height:10px; border-right:2px solid #475569; border-bottom:2px solid #475569; transform: rotate(-45deg); transition: transform .2s ease; display:inline-block; margin-left:10px; }
+.order-header-row.collapsed .caret { transform: rotate(135deg); }
+
+/* Collapse behavior (no Bootstrap JS required) */
+.collapse { display: none; }
+.collapse.show { display: block; }
+
+/* Table visuals */
+.table td, .table th { vertical-align: middle; }
+.thead-light th { background: var(--thead-bg); color: var(--card-ink); }
+
+/* Responsive tweaks */
+@media (max-width: 575.98px) {
+  .profile-hero{ border-radius:12px; }
+  .avatar-ring{ width:72px; height:72px; font-size:24px; }
+}
+</style>
+
+<div id="profile-root" data-theme="light">
+<div class="container py-5 mt-5">
+    <div class="profile-hero p-4 p-md-5 mb-4 card-shadow">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4a1 1 0 0 1 1 1 6 6 0 1 0 6 6 1 1 0 1 1 2 0 8 8 0 1 1-8-8 1 1 0 0 1 0 1z"/></svg>
+        </button>
+        <div class="d-flex align-items-center">
+            <div class="mr-3 mr-md-4">
+                <div class="avatar-ring">
+                    {% with u_form.first_name.value|default:user.first_name|default:user.username as name_src %}
+                        {{ name_src|first|upper }}
+                    {% endwith %}
+                </div>
+            </div>
+            <div class="flex-grow-1">
+                <h2 class="mb-1">Welcome back{% if user.first_name %}, {{ user.first_name }}{% endif %}.</h2>
+                <div class="text-white-50">Manage your details and track orders.</div>
+                <div class="mt-2"><span class="badge badge-light" style="color:#111;">Member since {{ user.date_joined|date:"M Y" }}</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card card-shadow h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Account Snapshot</h5>
+                    <div class="d-flex flex-wrap">
+                        <div class="stat-pill mr-2 mb-2">
+                            <small class="text-muted d-block">Orders</small>
+                            <strong class="stat-count" data-target="{% if orders %}{{ orders|length }}{% else %}0{% endif %}">0</strong>
+                        </div>
+                        <div class="stat-pill mr-2 mb-2">
+                            <small class="text-muted d-block">Email</small>
+                            <strong>{{ user.email }}</strong>
+                        </div>
+                    </div>
+                    <hr>
+                    <div>
+                        <a href="/cart/" class="btn btn-sm btn-gradient btn-block mb-2">View Cart</a>
+                        <a href="/shop/view/" class="btn btn-sm btn-outline-dark btn-block">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8 mb-4">
+            <div class="card card-shadow mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="mb-0">Edit Profile</h5>
+                    </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>First Name</label>
+                                {{ u_form.first_name|add_class:"form-control" }}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Last Name</label>
+                                {{ u_form.last_name|add_class:"form-control" }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            {{ u_form.email|add_class:"form-control" }}
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Phone</label>
+                                {{ p_form.phone|add_class:"form-control" }}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Address</label>
+                                {{ p_form.address|add_class:"form-control" }}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-gradient btn-block">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card card-shadow">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="mb-0">Order History</h5>
+                        <div>
+                            {% if orders %}
+                            <span class="badge badge-dark mr-2">{{ orders|length }} orders</span>
+                            <a href="{% url 'profile_orders_pdf' %}" class="btn btn-sm btn-outline-dark">Download PDF</a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if orders %}
+                        <div id="orders-accordion">
+                            {% for order in orders %}
+                                <div class="mb-3 order-card">
+                                    <div class="px-3 py-2 d-flex align-items-center justify-content-between order-header-row collapsed" data-target="#order-{{ order.id }}" aria-expanded="false" aria-controls="order-{{ order.id }}">
+                                        <div class="d-flex align-items-center">
+                                            <div class="mr-3">
+                                                {% if order.order_status == 'delivered' %}
+                                                    <span class="badge badge-success">Delivered</span>
+                                                {% elif order.order_status == 'shipped' %}
+                                                    <span class="badge badge-info">Shipped</span>
+                                                {% elif order.order_status == 'processing' %}
+                                                    <span class="badge badge-warning">Processing</span>
+                                                {% elif order.order_status == 'cancelled' %}
+                                                    <span class="badge badge-danger">Cancelled</span>
+                                                {% else %}
+                                                    <span class="badge badge-secondary">Pending</span>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <strong>Order #{{ order.id }}</strong>
+                                                <small class="text-muted ml-2">{{ order.created_at|date:"M d, Y" }}</small>
+                                            </div>
+                                        </div>
+                                            <div class="text-right">
+                                                <span class="text-muted mr-2">Total</span>
+                                                <strong>{{ order.total_price }} ৳</strong>
+                                                <span class="caret"></span>
+                                            </div>
+                                    </div>
+                                    <div id="order-{{ order.id }}" class="collapse" data-parent="#orders-accordion" style="overflow:hidden;">
+                                        <div class="px-3 pb-3">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm mb-0">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th scope="col">Product</th>
+                                                            <th scope="col" class="text-right" style="width: 80px;">Qty</th>
+                                                            <th scope="col" class="text-right" style="width: 110px;">Size</th>
+                                                            <th scope="col" class="text-right" style="width: 120px;">Price</th>
+                                                            <th scope="col" class="text-right" style="width: 120px;">Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for item in order.items.all %}
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex align-items-center">
+                                                                    {% if item.product.image1 %}
+                                                                        <img src="{{ item.product.image1.url }}" alt="{{ item.product.name }}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;margin-right:8px;">
+                                                                    {% endif %}
+                                                                    <span>{{ item.product.name }}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td class="text-right">{{ item.quantity }}</td>
+                                                            <td class="text-right">{{ item.volume_option|default:"-" }}</td>
+                                                            <td class="text-right">{{ item.price }} ৳</td>
+                                                            <td class="text-right">{{ item.quantity|mul:item.price }} ৳</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <th colspan="3" class="text-right">Delivery Charge:</th>
+                                                            <th class="text-right">{{ order.delivery_charge|default_if_none:"0"|floatformat:2 }} ৳</th>
+                                                        </tr>
+                                                        <tr class="bg-light">
+                                                            <th colspan="3" class="text-right">Order Total:</th>
+                                                            <th class="text-right">{{ order.total_price }} ৳</th>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">You haven't made any orders yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+// Helper slide animations
+function slideUp(el, duration=220){ el.style.height = el.offsetHeight+'px'; el.offsetHeight; el.style.transitionProperty='height'; el.style.transitionDuration=duration+'ms'; el.style.height=0; setTimeout(()=>{ el.classList.remove('show'); el.style.removeProperty('height'); el.style.removeProperty('transition-property'); el.style.removeProperty('transition-duration'); el.style.display='none'; }, duration); }
+function slideDown(el, duration=220){ el.style.removeProperty('display'); let d = window.getComputedStyle(el).display; if(d==='none') d='block'; el.style.display=d; let h = el.scrollHeight; el.style.height=0; el.style.transitionProperty='height'; el.style.transitionDuration=duration+'ms'; el.offsetHeight; el.style.height=h+'px'; setTimeout(()=>{ el.classList.add('show'); el.style.removeProperty('height'); el.style.removeProperty('transition-property'); el.style.removeProperty('transition-duration'); }, duration); }
+
+// Theme toggle with localStorage persistence
+(function(){
+  const root = document.getElementById('profile-root');
+  const btn = document.getElementById('theme-toggle');
+  if(!root || !btn) return;
+  const KEY = 'profileTheme';
+  function setTheme(t){ root.setAttribute('data-theme', t); localStorage.setItem(KEY, t); updateIcon(t); }
+  function updateIcon(t){
+    btn.innerHTML = t === 'dark'
+      ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+      : '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.76 4.84l-1.8-1.79L3.17 4.84l1.79 1.79 1.8-1.79zM1 13h3v-2H1v2zm10 10h2v-3h-2v3zm9-10v-2h-3v2h3zM6.76 19.16l-1.8 1.79 1.79 1.79 1.8-1.79-1.79-1.79zM12 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14zm5.24-.16l1.8-1.79-1.79-1.79-1.8 1.79 1.79 1.79zM20.83 19.16l-1.79-1.79-1.8 1.79 1.79 1.79 1.8-1.79z"/></svg>';
+  }
+  const saved = localStorage.getItem(KEY) || 'light';
+  setTheme(saved);
+  btn.addEventListener('click', ()=> setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+})();
+
+// Animate counters when visible
+(function(){
+  const counters = document.querySelectorAll('.stat-count');
+  if(!counters.length) return;
+  const duration = 900;
+  const seen = new WeakSet();
+  function animate(el){
+    if(seen.has(el)) return; seen.add(el);
+    const target = parseInt(el.getAttribute('data-target') || '0', 10);
+    const start = 0; const startTime = performance.now();
+    function step(now){
+      const p = Math.min(1, (now - startTime)/duration);
+      const eased = 1 - Math.pow(1-p, 3);
+      el.textContent = Math.floor(start + (target - start)*eased).toLocaleString();
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ animate(e.target); } });
+  }, { threshold: .5 });
+  counters.forEach(el=> io.observe(el));
+})();
+
+// Custom accordion toggle (independent of Bootstrap JS)
+(function(){
+  const acc = document.getElementById('orders-accordion');
+  if(!acc) return;
+  acc.querySelectorAll('.order-header-row').forEach(header => {
+    header.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const sel = header.getAttribute('data-target');
+      const body = sel ? document.querySelector(sel) : null;
+      if(!body) return;
+      // Close others
+      acc.querySelectorAll('.collapse').forEach(el => {
+        if(el !== body && el.classList.contains('show')){ slideUp(el); const h = acc.querySelector(`.order-header-row[data-target="#${el.id}"]`); if(h) h.classList.add('collapsed'); }
+      });
+      // Toggle this
+      if(body.classList.contains('show')){ slideUp(body); header.classList.add('collapsed'); header.setAttribute('aria-expanded','false'); }
+      else { slideDown(body); header.classList.remove('collapsed'); header.setAttribute('aria-expanded','true'); }
+    });
+  });
+})();
+</script>
+
+{% load site_extras %}
+{% delivery_section 'profile' %}
+{% endblock %}

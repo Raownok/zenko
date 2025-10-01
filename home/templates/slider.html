@@ -1,0 +1,51 @@
+{% load static %}
+
+<div class="owl-carousel owl-single home-slider">
+    {% for slide in slider_items %}
+    <div class="slider-container">
+        {% if slide.link_url %}
+        <a href="{{ slide.link_url }}">
+            <img src="{{ slide.image.url }}" alt="Slider {{ slide.id }}" class="slider-img">
+        </a>
+        {% else %}
+            <img src="{{ slide.image.url }}" alt="Slider {{ slide.id }}" class="slider-img">
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+.home-slider { margin-bottom: 0 !important; }
+.owl-carousel.home-slider { margin-bottom: 0 !important; }
+.slider-container {
+    width: 100vw;
+    max-width: 100vw;
+    height: 70vh;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f9f9f9; /* খালি জায়গায় হালকা background */
+}
+
+.slider-container a { display: block; width: 100%; height: 100%; }
+
+.slider-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* full-bleed */
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+    .slider-container { height: 56vh; }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .slider-container { height: 45vh; }
+}
+@media (max-width: 400px) {
+    .slider-container { height: 42vh; }
+}
+</style>
