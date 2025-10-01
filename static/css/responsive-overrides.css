@@ -1,0 +1,148 @@
+/* Global responsive overrides for Zenko
+   Scope: non-destructive, mobile-first enhancements layered after existing CSS
+*/
+
+/* 1) Make media fluid by default */
+img, video, iframe, embed, object {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 2) Prevent horizontal scrolling glitches */
+html, body {
+  width: 100%;
+}
+body {
+  overflow-x: hidden;
+}
+
+/* 3) Container breathing room on small screens */
+@media (max-width: 991.98px) {
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+/* 4) Tables: make horizontally scrollable on small devices */
+.table-responsive,
+.site-blocks-table { /* cart wrapper */
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* 5) Headings and large sections scale down on smaller devices */
+@media (max-width: 768px) {
+  .page-heading { padding: 24px 0; }
+  .untree_co-section { padding: 40px 0; }
+}
+
+/* 6) Forms and buttons fit on narrow viewports */
+@media (max-width: 576px) {
+  .form-control, .custom-select, button, .btn {
+    font-size: 14px;
+  }
+}
+
+/* 7) Navbar safe spacing on mobile (prevents overlap) */
+@media (max-width: 991.98px) {
+  .site-nav { padding-bottom: 20px; }
+  .menu-icons { right: 16px; }
+}
+
+/* 8) Gallery grid fallbacks (global) */
+@media (max-width: 576px) {
+  .gallery .col-4 { flex: 0 0 50%; max-width: 50%; }
+}
+@media (max-width: 400px) {
+  .gallery .col-4 { flex: 0 0 100%; max-width: 100%; }
+}
+
+/* 9) Fancybox/embedded media containers */
+.embed-responsive {
+  position: relative; display: block; width: 100%; overflow: hidden;
+}
+.embed-responsive .embed-responsive-item,
+.embed-responsive video,
+.embed-responsive iframe,
+.embed-responsive embed,
+.embed-responsive object {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
+}
+
+/* 10) Card/block shadows toned down on mobile to reduce visual noise */
+@media (max-width: 576px) {
+  .custom-block { box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+}
+
+/***** Sorting controls responsiveness *****/
+.sort { gap: 8px; }
+.sort .form-control { min-width: 220px; }
+@media (max-width: 768px){
+  .sort { flex-wrap: wrap; justify-content: space-between; }
+  .sort strong, .sort label { margin-bottom: 6px; }
+  .sort form { width: 100%; }
+  .sort .form-control { width: 100%; min-width: 0; }
+}
+
+/* 11) Product grid image aspect ratio and spacing */
+.product-item .product-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.product-item .product-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@media (max-width: 576px) {
+  .product-item { margin-bottom: 14px; }
+}
+
+/* Generic media cover helper for pages like About */
+.media-cover{ position:relative; width:100%; border-radius:12px; overflow:hidden; }
+.media-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
+.media-cover.ratio-16x9{ aspect-ratio:16/9; }
+.media-cover.ratio-4x3{ aspect-ratio:4/3; }
+/* Fill available height automatically */
+.media-cover.fill{ height:100%; min-height:320px; }
+@media (max-width: 768px){ .media-cover.fill{ min-height:220px; } }
+
+/* Make about row columns equal-height so image can fill */
+.about-equal .col-lg-6, .about-equal .col-lg-5{ display:flex; }
+.about-equal .col-lg-6 > *, .about-equal .col-lg-5 > *{ width:100%; }
+
+@supports not (aspect-ratio: 1/1){
+  .media-cover.ratio-16x9{ padding-top:56.25%; }
+  .media-cover.ratio-4x3{ padding-top:75%; }
+  .media-cover img{ position:absolute; inset:0; }
+}
+
+/* 12) Category cards on home: reduce height on small screens */
+@media (max-width: 768px) {
+  .category-card__img,
+  .category-card--placeholder { height: 170px !important; }
+}
+@media (max-width: 576px) {
+  .category-card__img,
+  .category-card--placeholder { height: 150px !important; }
+}
+@media (max-width: 400px) {
+  .category-card__img,
+  .category-card--placeholder { height: 130px !important; }
+}
+
+/* 13) Popular items headings and nav spacing on small screens */
+@media (max-width: 576px) {
+  .carousel-nav a svg { font-size: 24px; }
+  .untree_co-section .h3 { font-size: 1.25rem; }
+}
+
